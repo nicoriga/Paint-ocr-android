@@ -26,7 +26,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.UUID;
 
-public class MainActivity extends Activity implements View.OnClickListener {
+public class MainActivity extends Activity{
 
     private DBAdapter dbAdapter;
 
@@ -76,24 +76,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
         mediumBrush = getResources().getInteger(R.integer.medium_size);
         largeBrush = getResources().getInteger(R.integer.large_size);
 
-        //draw button
-        drawBtn = (ImageButton)findViewById(R.id.draw_btn);
-        drawBtn.setOnClickListener(this);
-
         //set initial size
-        drawView.setBrushSize(mediumBrush);
-
-        //erase button
-        eraseBtn = (ImageButton)findViewById(R.id.erase_btn);
-        eraseBtn.setOnClickListener(this);
-
-        //new button
-        newBtn = (ImageButton)findViewById(R.id.new_btn);
-        newBtn.setOnClickListener(this);
-
-        //save button
-        saveBtn = (ImageButton)findViewById(R.id.save_btn);
-        saveBtn.setOnClickListener(this);
+        drawView.setBrushSize(smallBrush);
 
         lettersList = (ListView) findViewById(R.id.listview);
 
@@ -114,155 +98,11 @@ public class MainActivity extends Activity implements View.OnClickListener {
         return true;
     }
 
-    //user clicked paint
-    public void paintClicked(View view){
-        //use chosen color
-
-        //set erase false
-        drawView.setErase(false);
-        drawView.setBrushSize(drawView.getLastBrushSize());
-
-        if(view!=currPaint){
-            ImageButton imgView = (ImageButton)view;
-            String color = view.getTag().toString();
-            drawView.setColor(color);
-            //update ui
-            imgView.setImageDrawable(getResources().getDrawable(R.drawable.paint_pressed));
-            currPaint.setImageDrawable(getResources().getDrawable(R.drawable.paint));
-            currPaint=(ImageButton)view;
-        }
+    public void onClickNew(View view) {
+        //new button
+        drawView.startNew();
     }
 
-    @Override
-    public void onClick(View view){
-
-        if(view.getId()==R.id.draw_btn){
-            //draw button clicked
-            final Dialog brushDialog = new Dialog(this);
-            brushDialog.setTitle("Brush size:");
-            brushDialog.setContentView(R.layout.brush_chooser);
-            //listen for clicks on size buttons
-            ImageButton smallBtn = (ImageButton)brushDialog.findViewById(R.id.small_brush);
-            smallBtn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    drawView.setErase(false);
-                    drawView.setBrushSize(smallBrush);
-                    drawView.setLastBrushSize(smallBrush);
-                    brushDialog.dismiss();
-                }
-            });
-            ImageButton mediumBtn = (ImageButton)brushDialog.findViewById(R.id.medium_brush);
-            mediumBtn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    drawView.setErase(false);
-                    drawView.setBrushSize(mediumBrush);
-                    drawView.setLastBrushSize(mediumBrush);
-                    brushDialog.dismiss();
-                }
-            });
-            ImageButton largeBtn = (ImageButton)brushDialog.findViewById(R.id.large_brush);
-            largeBtn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    drawView.setErase(false);
-                    drawView.setBrushSize(largeBrush);
-                    drawView.setLastBrushSize(largeBrush);
-                    brushDialog.dismiss();
-                }
-            });
-            //show and wait for user interaction
-            brushDialog.show();
-        }
-        else if(view.getId()==R.id.erase_btn){
-            //switch to erase - choose size
-            final Dialog brushDialog = new Dialog(this);
-            brushDialog.setTitle("Eraser size:");
-            brushDialog.setContentView(R.layout.brush_chooser);
-            //size buttons
-            ImageButton smallBtn = (ImageButton)brushDialog.findViewById(R.id.small_brush);
-            smallBtn.setOnClickListener(new View.OnClickListener(){
-                @Override
-                public void onClick(View v) {
-                    drawView.setErase(true);
-                    drawView.setBrushSize(smallBrush);
-                    brushDialog.dismiss();
-                }
-            });
-            ImageButton mediumBtn = (ImageButton)brushDialog.findViewById(R.id.medium_brush);
-            mediumBtn.setOnClickListener(new View.OnClickListener(){
-                @Override
-                public void onClick(View v) {
-                    drawView.setErase(true);
-                    drawView.setBrushSize(mediumBrush);
-                    brushDialog.dismiss();
-                }
-            });
-            ImageButton largeBtn = (ImageButton)brushDialog.findViewById(R.id.large_brush);
-            largeBtn.setOnClickListener(new View.OnClickListener(){
-                @Override
-                public void onClick(View v) {
-                    drawView.setErase(true);
-                    drawView.setBrushSize(largeBrush);
-                    brushDialog.dismiss();
-                }
-            });
-            brushDialog.show();
-        }
-        else if(view.getId()==R.id.new_btn){
-            //new button
-            AlertDialog.Builder newDialog = new AlertDialog.Builder(this);
-            newDialog.setTitle("New drawing");
-            newDialog.setMessage("Start new drawing (you will lose the current drawing)?");
-            newDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener(){
-                public void onClick(DialogInterface dialog, int which){
-                    drawView.startNew();
-                    dialog.dismiss();
-                }
-            });
-            newDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener(){
-                public void onClick(DialogInterface dialog, int which){
-                    dialog.cancel();
-                }
-            });
-            newDialog.show();
-        }
-        else if(view.getId()==R.id.save_btn){
-            //save drawing
-            AlertDialog.Builder saveDialog = new AlertDialog.Builder(this);
-            saveDialog.setTitle("Save drawing");
-            saveDialog.setMessage("Save drawing to device Gallery?");
-            saveDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener(){
-                public void onClick(DialogInterface dialog, int which){
-                    //save drawing
-                    drawView.setDrawingCacheEnabled(true);
-                    //attempt to save
-                    String imgSaved = MediaStore.Images.Media.insertImage(
-                            getContentResolver(), drawView.getDrawingCache(),
-                            UUID.randomUUID().toString()+".png", "drawing");
-                    //feedback
-                    if(imgSaved!=null){
-                        Toast savedToast = Toast.makeText(getApplicationContext(),
-                                "Drawing saved to Gallery!", Toast.LENGTH_SHORT);
-                        savedToast.show();
-                    }
-                    else{
-                        Toast unsavedToast = Toast.makeText(getApplicationContext(),
-                                "Oops! Image could not be saved.", Toast.LENGTH_SHORT);
-                        unsavedToast.show();
-                    }
-                    drawView.destroyDrawingCache();
-                }
-            });
-            saveDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener(){
-                public void onClick(DialogInterface dialog, int which){
-                    dialog.cancel();
-                }
-            });
-            saveDialog.show();
-        }
-    }
 
     // carica il training set e lo visualizza sulla lista a sinistra
     public void onClickLoad(View view){
@@ -391,7 +231,6 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
             ps.close();
             os.close();
-            // TODo clear_actionPerformed(null);
             Toast.makeText(getApplicationContext(),"Salvato nel file 'sample.dat'.", Toast.LENGTH_SHORT).show();
 
         } catch ( Exception e ) {
@@ -399,5 +238,77 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
         }
         */
+    }
+
+    public void onClickPreview(View view) {
+        try {
+            Entry entry = new Entry(drawView.canvasBitmap);
+            Sample sample = new Sample(DOWNSAMPLE_WIDTH, DOWNSAMPLE_HEIGHT);
+            entry.setSample(sample);
+            entry.downSample();
+            ((ImageView) findViewById(R.id.sample_image)).setImageBitmap(sample.paint(20));
+        }
+        catch (Exception e){
+            Toast.makeText(getApplicationContext(),"Errore Riconoscimento:" + e.toString(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void onClickRecognize(View view){
+        if ( net==null ) {
+            Toast.makeText(getApplicationContext(),"La rete deve essere addestrata prima!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        Entry entry = new Entry(drawView.canvasBitmap);
+        Sample sample = new Sample(DOWNSAMPLE_WIDTH, DOWNSAMPLE_HEIGHT);
+        entry.setSample(sample);
+        entry.downSample();
+        ((ImageView) findViewById(R.id.sample_image)).setImageBitmap(sample.paint(20));
+
+        double input[] = new double[5*7];
+        int idx=0;
+        SampleData ds = sample.getData();
+        for ( int y=0;y<ds.getHeight();y++ ) {
+            for ( int x=0;x<ds.getWidth();x++ ) {
+                input[idx++] = ds.getData(x,y)?.5:-.5;
+            }
+        }
+
+        double normfac[] = new double[1];
+        double synth[] = new double[1];
+
+        int best = net.winner ( input , normfac , synth ) ;
+        char map[] = mapNeurons();
+        Toast.makeText(getApplicationContext(),
+                "  " + map[best] + "   (Il neurone vincente è il #" + best +")", Toast.LENGTH_SHORT).show();
+
+    }
+
+    /**
+     * Used to map neurons to actual letters.
+     *
+     * @return The current mapping between neurons and letters as an array.
+     */
+    char []mapNeurons()
+    {
+        char map[] = new char[lettersList.getCount()];
+        double normfac[] = new double[1];
+        double synth[] = new double[1];
+
+        for ( int i=0;i<map.length;i++ )
+            map[i]='?';
+        for ( int i=0;i<lettersList.getCount();i++ ) {
+            double input[] = new double[5*7];
+            int idx=0;
+            SampleData ds = (SampleData)lettersList.getItemAtPosition(i);
+            for ( int y=0;y<ds.getHeight();y++ ) {
+                for ( int x=0;x<ds.getWidth();x++ ) {
+                    input[idx++] = ds.getData(x,y)?.5:-.5;
+                }
+            }
+
+            int best = net.winner ( input , normfac , synth ) ;
+            map[best] = ds.getLetter();
+        }
+        return map;
     }
 }

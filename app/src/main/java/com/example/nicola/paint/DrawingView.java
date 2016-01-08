@@ -32,7 +32,7 @@ public class DrawingView extends View {
     //canvas
     private Canvas drawCanvas;
     //canvas bitmap
-    private Bitmap canvasBitmap;
+    public Bitmap canvasBitmap;
     //brush sizes
     private float brushSize, lastBrushSize;
     //erase flag

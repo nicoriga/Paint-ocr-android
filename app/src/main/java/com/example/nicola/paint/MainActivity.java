@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v7.app.AlertDialog;
@@ -26,6 +27,8 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 public class MainActivity extends Activity implements View.OnClickListener {
+
+    private DBAdapter dbAdapter;
 
     //custom drawing view
     private DrawingView drawView;
@@ -62,7 +65,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        dbAdapter = new DBAdapter(this);
         context = getBaseContext();
 
         //get drawing view
@@ -261,6 +264,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
         }
     }
 
+    // carica il training set e lo visualizza sulla lista a sinistra
     public void onClickLoad(View view){
 
         try {
@@ -298,9 +302,13 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
             list_character.setText(characters);
             r.close();
-            //f.close();
             // TODO: clear_actionPerformed(null);
             Toast.makeText(getApplicationContext(),"Caricato dal file 'sample.dat'.", Toast.LENGTH_SHORT).show();
+
+            Cursor cursor = dbAdapter.getAllRecord();
+            for (int j = 0; j< cursor.getCount(); j++){
+                cursor.moveToPosition(j);
+            }
 
         } catch ( Exception e ) {
             Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_SHORT).show();

@@ -59,7 +59,7 @@ public class DBOpenHelper extends SQLiteOpenHelper{
             String line;
 
             while ((line = r.readLine()) != null) {
-                query = "INSERT INTO "+ TABLE + " (" + CHARACTER + "," + DATA  + ") values (" + line.charAt(0) +", " + line.substring(2) + ");";
+                query = "INSERT INTO "+ TABLE + " (" + CHARACTER + "," + DATA  + ") values ('" + line.charAt(0) +"' , '" + line.substring(2) + "' );";
                 db.execSQL(query);
                 query = "";
             }

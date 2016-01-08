@@ -268,57 +268,43 @@ public class MainActivity extends Activity implements View.OnClickListener {
     public void onClickLoad(View view){
 
         try {
-            InputStream is;// the actual file stream
-            BufferedReader r;// used to read the file line by line
-
-            is = getResources().getAssets().open("sample.dat");
-            r = new BufferedReader(new InputStreamReader(is));
-
-            String line;
-            int i=0;
-            String characters = "";
-
-            TextView list_character = (TextView) findViewById(R.id.list_character);
-            list_character.setText("");
-
-            ArrayList<SampleData> sd_array = new ArrayList<SampleData>();
+            dbAdapter.open();
+            ArrayList<SampleData> sd_array = new ArrayList<>();
             ArrayAdapter<SampleData> adapter;
 
-            while ( (line=r.readLine()) !=null ) {
-                SampleData ds = new SampleData(line.charAt(0),DOWNSAMPLE_WIDTH,DOWNSAMPLE_HEIGHT);
-                characters += ds.letter + "\n";
+            String line = "";
+            Cursor cursor = dbAdapter.getAllRecord();
+            cursor.moveToFirst();
+            while ( !cursor.isAfterLast() ) {
+                SampleData ds = new SampleData(cursor.getString(cursor.getColumnIndex(DBOpenHelper.CHARACTER)).charAt(0),DOWNSAMPLE_WIDTH,DOWNSAMPLE_HEIGHT);
+                line = cursor.getString( cursor.getColumnIndex(DBOpenHelper.DATA));
                 sd_array.add(ds);
-                int idx=2;
+                int idx=0;
                 for ( int y=0;y<ds.getHeight();y++ ) {
                     for (int x=0;x<ds.getWidth();x++ ) {
                         ds.setData(x, y, line.charAt(idx++)=='1');
                     }
                 }
+                cursor.moveToNext();
             }
+            cursor.close();
+            dbAdapter.close();
 
-            adapter = new ArrayAdapter<SampleData>(this,android.R.layout.simple_list_item_1, android.R.id.text1, sd_array);
+            adapter = new ArrayAdapter<>(this,android.R.layout.simple_list_item_1, android.R.id.text1, sd_array);
             // Assign adapter to ListView
             lettersList.setAdapter(adapter);
 
-            list_character.setText(characters);
-            r.close();
-            // TODO: clear_actionPerformed(null);
             Toast.makeText(getApplicationContext(),"Caricato dal file 'sample.dat'.", Toast.LENGTH_SHORT).show();
-
-            Cursor cursor = dbAdapter.getAllRecord();
-            for (int j = 0; j< cursor.getCount(); j++){
-                cursor.moveToPosition(j);
-            }
-
         } catch ( Exception e ) {
             Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_SHORT).show();
         }
     }
 
     public void onClickStartTraining(View view){
+        final boolean[] trained = new boolean[1];
         if ( trainThread==null ) {
-            //TODO train.setText("Stop Training");
             trainThread = new Thread(new Runnable() {
+
                 @Override
                 public void run() {
                     try {
@@ -341,15 +327,29 @@ public class MainActivity extends Activity implements View.OnClickListener {
                         net = new KohonenNetwork(inputNeuron,outputNeuron);
                         net.setTrainingSet(set);
                         net.learn();
-                        //Toast.makeText(getApplicationContext(), "Training Terminato", Toast.LENGTH_SHORT).show();
+                        trained[0] = true;
+                        //
 
                     } catch ( Exception e ) {
-                        //Toast.makeText(getApplicationContext(), "Errore: Training", Toast.LENGTH_SHORT).show();
+                        trained[0] = false;
                         e.printStackTrace();
                     }
                 }
+
             });
             trainThread.start();
+
+            try {
+                trainThread.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            if(trained[0])
+                Toast.makeText(getApplicationContext(), "Training terminato!", Toast.LENGTH_SHORT).show();
+            else
+                Toast.makeText(getApplicationContext(), "Errore: Training", Toast.LENGTH_SHORT).show();
+
         } else {
             net.halt=true;
         }
@@ -369,7 +369,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
     public void onClickSave(View view){
     /*
         try {
-            // TODo da sistemare il salvataggio... non possibile nella cartella assets
+            // TODO da sistemare il salvataggio... non possibile nella cartella assets
 
             OutputStream os;// the actual file stream
             PrintStream ps;// used to read the file line by line

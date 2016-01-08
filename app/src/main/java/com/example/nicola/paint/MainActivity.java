@@ -199,7 +199,7 @@ public class MainActivity extends Activity{
         int i = lettersList.getSelectedItemPosition();
         //TODO fare in modo che quando si clicchi su una lettera questa possa poi essere eliminata
         if ( i==-1 ) {
-            Toast.makeText(getApplicationContext(), "eleziona una lettera da cancellare.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "Seleziona una lettera da cancellare.", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -209,7 +209,7 @@ public class MainActivity extends Activity{
     public void onClickSave(View view){
     /*
         try {
-            // TODO da sistemare il salvataggio... non possibile nella cartella assets
+            // TODO da sistemare il salvataggio...
 
             OutputStream os;// the actual file stream
             PrintStream ps;// used to read the file line by line

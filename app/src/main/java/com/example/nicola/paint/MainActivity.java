@@ -59,6 +59,8 @@ public class MainActivity extends Activity{
      */
     static final int DOWNSAMPLE_HEIGHT = 7;
 
+    static final int PIXEL_SIZE = 60;
+
     Context context;
 
     @Override
@@ -86,7 +88,7 @@ public class MainActivity extends Activity{
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Sample s = new Sample(DOWNSAMPLE_WIDTH, DOWNSAMPLE_WIDTH);
                 s.setData((SampleData) lettersList.getItemAtPosition(position));
-                ((ImageView) findViewById(R.id.sample_image)).setImageBitmap(s.paint(20));
+                ((ImageView) findViewById(R.id.sample_image)).setImageBitmap(s.paint(PIXEL_SIZE));
             }
         });
     }
@@ -134,7 +136,7 @@ public class MainActivity extends Activity{
             // Assign adapter to ListView
             lettersList.setAdapter(adapter);
 
-            Toast.makeText(getApplicationContext(),"Caricato dal file 'sample.dat'.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(),"Caricato Terminato.", Toast.LENGTH_SHORT).show();
         } catch ( Exception e ) {
             Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_SHORT).show();
         }
@@ -206,10 +208,10 @@ public class MainActivity extends Activity{
         lettersList.removeViewAt(i);
     }
 
-    public void onClickSave(View view){
+    public void onClickAdd(View view){
     /*
         try {
-            // TODO da sistemare il salvataggio...
+            // TODO da sistemare l'aggiunto di un nuovo carattere...
 
             OutputStream os;// the actual file stream
             PrintStream ps;// used to read the file line by line
@@ -246,23 +248,23 @@ public class MainActivity extends Activity{
             Sample sample = new Sample(DOWNSAMPLE_WIDTH, DOWNSAMPLE_HEIGHT);
             entry.setSample(sample);
             entry.downSample();
-            ((ImageView) findViewById(R.id.sample_image)).setImageBitmap(sample.paint(20));
+            ((ImageView) findViewById(R.id.sample_image)).setImageBitmap(sample.paint(PIXEL_SIZE));
         }
         catch (Exception e){
-            Toast.makeText(getApplicationContext(),"Errore Riconoscimento:" + e.toString(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(),"Errore Anteprima:" + e.toString(), Toast.LENGTH_SHORT).show();
         }
     }
 
     public void onClickRecognize(View view){
         if ( net==null ) {
-            Toast.makeText(getApplicationContext(),"La rete deve essere addestrata prima!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(),"La rete deve essere prima addestrata!", Toast.LENGTH_SHORT).show();
             return;
         }
         Entry entry = new Entry(drawView.canvasBitmap);
         Sample sample = new Sample(DOWNSAMPLE_WIDTH, DOWNSAMPLE_HEIGHT);
         entry.setSample(sample);
         entry.downSample();
-        ((ImageView) findViewById(R.id.sample_image)).setImageBitmap(sample.paint(20));
+        ((ImageView) findViewById(R.id.sample_image)).setImageBitmap(sample.paint(PIXEL_SIZE));
 
         double input[] = new double[5*7];
         int idx=0;
@@ -280,7 +282,7 @@ public class MainActivity extends Activity{
         char map[] = mapNeurons();
         Toast.makeText(getApplicationContext(),
                 "  " + map[best] + "   (Il neurone vincente è il #" + best +")", Toast.LENGTH_SHORT).show();
-
+        ((TextView) findViewById(R.id.recognized_result)).setText("" + map[best]);
     }
 
     /**

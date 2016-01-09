@@ -8,10 +8,14 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v7.app.AlertDialog;
+import android.view.ContextMenu;
+import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Menu;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -29,6 +33,9 @@ import java.util.UUID;
 public class MainActivity extends Activity{
 
     private DBAdapter dbAdapter;
+
+    private ArrayList<SampleData> sd_array = new ArrayList<>();
+    private String newCharacter;
 
     //custom drawing view
     private DrawingView drawView;
@@ -91,6 +98,8 @@ public class MainActivity extends Activity{
                 ((ImageView) findViewById(R.id.sample_image)).setImageBitmap(s.paint(PIXEL_SIZE));
             }
         });
+
+        registerForContextMenu(lettersList);
     }
 
     @Override
@@ -111,8 +120,7 @@ public class MainActivity extends Activity{
 
         try {
             dbAdapter.open();
-            ArrayList<SampleData> sd_array = new ArrayList<>();
-            ArrayAdapter<SampleData> adapter;
+            sd_array.clear();
 
             String line = "";
             Cursor cursor = dbAdapter.getAllRecord();
@@ -132,13 +140,14 @@ public class MainActivity extends Activity{
             cursor.close();
             dbAdapter.close();
 
-            adapter = new ArrayAdapter<>(this,android.R.layout.simple_list_item_1, android.R.id.text1, sd_array);
+            ArrayAdapter<SampleData> adapter = new ArrayAdapter<>(this,android.R.layout.simple_list_item_1, android.R.id.text1, sd_array);
             // Assign adapter to ListView
             lettersList.setAdapter(adapter);
+            registerForContextMenu(lettersList);
 
             Toast.makeText(getApplicationContext(),"Caricato Terminato.", Toast.LENGTH_SHORT).show();
         } catch ( Exception e ) {
-            Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "Errore Caricamento!", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -209,37 +218,46 @@ public class MainActivity extends Activity{
     }
 
     public void onClickAdd(View view){
-    /*
+
         try {
             // TODO da sistemare l'aggiunto di un nuovo carattere...
 
-            OutputStream os;// the actual file stream
-            PrintStream ps;// used to read the file line by line
+            String character;
 
-            //os = new FileOutputStream( "./sample.dat",false );
-            os = getResources().getAssets().
-            ps = new PrintStream(os);
+            // richiede la lettera attraverso un dialog
+            showInputDialog().show();
+            character = newCharacter;
 
-            for ( int i=0; i<lettersList.getCount(); i++ ) {
-                SampleData ds = (SampleData)lettersList.getItemAtPosition(i);
-                ps.print( ds.getLetter() + ":" );
-                for ( int y=0;y<ds.getHeight();y++ ) {
-                    for ( int x=0;x<ds.getWidth();x++ ) {
-                        ps.print( ds.getData(x,y)?"1":"0" );
-                    }
+            dbAdapter.open();
+
+            // effettuo il downsampling per realizzare la stringa di 1 e 0 da inserire nel database
+            Entry entry = new Entry(drawView.canvasBitmap);
+            Sample sample = new Sample(DOWNSAMPLE_WIDTH, DOWNSAMPLE_HEIGHT);
+            entry.setSample(sample);
+            entry.downSample();
+            String data = "";
+
+            SampleData ds = sample.getData();
+            ds.setLetter(character.charAt(0));
+
+            for ( int y=0;y<ds.getHeight();y++ ) {
+                for ( int x=0;x<ds.getWidth();x++ ) {
+                    data += ( ds.getData(x,y)?"1":"0" );
                 }
-                ps.println("");
             }
 
-            ps.close();
-            os.close();
-            Toast.makeText(getApplicationContext(),"Salvato nel file 'sample.dat'.", Toast.LENGTH_SHORT).show();
+            sd_array.add(ds);
+            ArrayAdapter<SampleData> adapter = new ArrayAdapter<>(this,android.R.layout.simple_list_item_1, android.R.id.text1, sd_array);
+            // Assign adapter to ListView
+            lettersList.setAdapter(adapter);
+            dbAdapter.insertRecord(character, data);
+            dbAdapter.close();
+            Toast.makeText(getApplicationContext(),"Aggiunta lettera.", Toast.LENGTH_SHORT).show();
 
         } catch ( Exception e ) {
             Toast.makeText(getApplicationContext(),"Errore Salvataggio:" + e.toString(), Toast.LENGTH_SHORT).show();
 
         }
-        */
     }
 
     public void onClickPreview(View view) {
@@ -312,5 +330,57 @@ public class MainActivity extends Activity{
             map[best] = ds.getLetter();
         }
         return map;
+    }
+
+    protected AlertDialog showInputDialog() {
+
+        // get prompts.xml view
+        LayoutInflater layoutInflater = LayoutInflater.from(MainActivity.this);
+        View promptView = layoutInflater.inflate(R.layout.input_dialog, null);
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(MainActivity.this);
+        alertDialogBuilder.setView(promptView);
+
+        final EditText editText = (EditText) promptView.findViewById(R.id.edittext);
+        // setup a dialog window
+        alertDialogBuilder.setCancelable(false)
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        newCharacter = editText.getText().toString();
+                    }
+                })
+                .setNegativeButton("Cancel",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.cancel();
+                            }
+                        });
+
+        // create an alert dialog
+        AlertDialog alert = alertDialogBuilder.create();
+        return alert;
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v,ContextMenu.ContextMenuInfo menuInfo) {
+        if (v.getId()==R.id.list_character) {
+            AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
+            menu.setHeaderTitle(sd_array.get(info.position).letter);
+            String[] menuItems = {"Elimina"};
+            for (int i = 0; i<menuItems.length; i++) {
+                menu.add(Menu.NONE, i, i, menuItems[i]);
+            }
+        }
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
+        int menuItemIndex = item.getItemId();
+        String[] menuItems = {"Elimina"};
+        String menuItemName = menuItems[menuItemIndex];
+
+        //TODO eliminare la lettera usando id
+
+        return true;
     }
 }

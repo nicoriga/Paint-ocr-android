@@ -45,7 +45,7 @@ public class DBAdapter {
 
 
     // inserisci nuovo record
-    public long createRecord(String character, String data )
+    public long insertRecord(String character, String data )
     {
         ContentValues values = createContentValues(character, data);
         return database.insertOrThrow(DBOpenHelper.TABLE, null, values);

@@ -38,7 +38,6 @@ public class Entry {
      * The down sample component used width this
      * component.
      */
-    // TODO Sample
     protected Sample sample;
 
     /**
@@ -102,7 +101,6 @@ public class Entry {
      *
      * @param s
      */
-    // TODO setSample
     public void setSample(Sample s) {
         sample = s;
     }
@@ -113,7 +111,6 @@ public class Entry {
      *
      * @return The down sample component.
      */
-    //TODO getSample
     public Sample getSample() {
         return sample;
     }
@@ -233,26 +230,12 @@ public class Entry {
         int w = width;
         int h = height;
 
-        //TODO completare downSample
-
-        /*
-        PixelGrabber grabber = new PixelGrabber(
-				entryImage,
-				0,
-				0,
-				w,
-				h,
-				true);
-        */
         try {
 
-            //grabber.grabPixels();
             pixelMap = new int[w*h];
             entryGraphics.getPixels(pixelMap, 0, w, 0, 0, w, h);
-            //pixelMap = (int[])grabber.getPixels();
             findBounds(w, h);
 
-            // now downsample
             SampleData data = sample.getData();
 
             ratioX = (double) (downSampleRight - downSampleLeft) / (double) data.getWidth();
@@ -267,29 +250,11 @@ public class Entry {
                 }
             }
 
-            //sample.repaint();
-            //repaint();
 
         } catch (Exception e) {
             //Toast.makeText(getApplicationContext(),"Errore Salvataggio:" + e.toString(), Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
 
-    }
-
-    /**
-     * Called to clear the image.
-     */
-    public void clear() {
-        //TODO completare clear
-		/*
-		this.entryGraphics.setColor(Color.white);
-		this.entryGraphics.fillRect(0, 0, getWidth(), getHeight());
-		this.downSampleBottom =
-				this.downSampleTop =
-				this.downSampleLeft =
-				this.downSampleRight = 0;
-		repaint();
-		*/
     }
 }

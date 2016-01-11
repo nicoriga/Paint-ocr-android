@@ -109,7 +109,8 @@ public class MainActivity extends Activity{
                                 sd_array.remove(position);
                                 ArrayAdapter<SampleData> adapter = new ArrayAdapter<SampleData>(context,android.R.layout.simple_list_item_1, android.R.id.text1, sd_array);
                                 lettersList.setAdapter(adapter);
-                                //onClickLoad(null);
+                                resetTrainThread();
+                                onClickStartTraining(null);
                             }
                         })
                         .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
@@ -408,5 +409,9 @@ public class MainActivity extends Activity{
         //TODO eliminare la lettera usando id
 
         return true;
+    }
+
+    private void resetTrainThread(){
+        trainThread = null;
     }
 }

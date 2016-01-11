@@ -48,23 +48,27 @@ public class Sample {
         this.data = data;
     }
 
-
-    public Bitmap paint(int cell_dimention)
+    /**
+     * Return the downsample image
+     * @param cell_dimension the dimension of the single square
+     * @return the downsaple image
+     */
+    public Bitmap paint(int cell_dimension)
     {
         if ( data == null )
             return null;
 
-        int height = data.getHeight() * cell_dimention;
-        int width = data.getWidth() * cell_dimention;
+        int height = data.getHeight() * cell_dimension;
+        int width = data.getWidth() * cell_dimension;
 
         // this creates a MUTABLE bitmap
         Bitmap bmp = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
         for(int i = 0; i < data.getWidth(); i++)
             for(int j = 0; j < data.getHeight(); j++)
                 if(data.getData(i, j))
-                    colorArea(bmp, i * cell_dimention , j * cell_dimention, cell_dimention, 0xFF000000);
+                    colorArea(bmp, i * cell_dimension , j * cell_dimension, cell_dimension, 0xFF000000);
                 else
-                    colorBorder(bmp, i * cell_dimention, j * cell_dimention, cell_dimention, 0xFF000000);
+                    colorBorder(bmp, i * cell_dimension, j * cell_dimension, cell_dimension, 0xFF000000);
 
         return bmp;
     }

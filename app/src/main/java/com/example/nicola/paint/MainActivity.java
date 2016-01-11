@@ -96,6 +96,7 @@ public class MainActivity extends Activity{
                 Sample s = new Sample(DOWNSAMPLE_WIDTH, DOWNSAMPLE_WIDTH);
                 s.setData((SampleData) lettersList.getItemAtPosition(position));
                 ((ImageView) findViewById(R.id.sample_image)).setImageBitmap(s.paint(PIXEL_SIZE));
+                ((TextView) findViewById(R.id.recognized_result)).setText("");
             }
         });
 
@@ -228,6 +229,7 @@ public class MainActivity extends Activity{
             entry.setSample(sample);
             entry.downSample();
             ((ImageView) findViewById(R.id.sample_image)).setImageBitmap(sample.paint(PIXEL_SIZE));
+            ((TextView) findViewById(R.id.recognized_result)).setText("");
         }
         catch (Exception e){
             Toast.makeText(getApplicationContext(),"Errore Anteprima:" + e.toString(), Toast.LENGTH_SHORT).show();

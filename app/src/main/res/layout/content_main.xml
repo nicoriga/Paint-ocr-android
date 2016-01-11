@@ -11,25 +11,10 @@
 
     <!-- Top Buttons -->
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="50dp"
-        android:layout_gravity="center"
-        android:orientation="horizontal" >
-
-        <ImageButton
-            android:id="@+id/new_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
-            android:contentDescription="@string/start_new"
-            android:src="@drawable/new_pic"
-            android:onClick="onClickNew"/>
-
-    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="550dp"
+        android:layout_height="660dp"
         android:layout_gravity="center"
         android:orientation="horizontal" >
     <!-- Custom View -->
@@ -75,6 +60,11 @@
                 android:id="@+id/recognized_result"
                 android:textSize="180dp"
                 android:textColor="#000000" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/result_text_view"
+                android:textSize="25dp"/>
         </LinearLayout>
     </LinearLayout>
     <!-- Color Palette -->
@@ -91,11 +81,7 @@
         android:layout_gravity="center"
         android:orientation="horizontal" >
 
-            <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Cancella"
-                android:onClick="onClickCancel"/>
+
 
             <Button
                 android:layout_width="wrap_content"
@@ -122,25 +108,20 @@
                 android:onClick="onClickPreview"/>
 
             <Button
+                android:id="@+id/new_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Nuovo"
+                android:onClick="onClickNew"/>
+
+
+            <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Riconosci"
                 android:onClick="onClickRecognize"/>
 
-        </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:orientation="horizontal" >
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/training_result_text_view"
-            android:text="CIAOOOO"
-            android:textSize="25dp"/>
         </LinearLayout>
 
 

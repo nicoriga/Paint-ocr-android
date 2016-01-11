@@ -288,6 +288,7 @@ public class MainActivity extends Activity{
         Toast.makeText(getApplicationContext(),
                 "  " + map[best] + "   (Il neurone vincente è il #" + best +")", Toast.LENGTH_SHORT).show();
         ((TextView) findViewById(R.id.recognized_result)).setText("" + map[best]);
+        ((TextView) findViewById(R.id.result_text_view)).setText("Il neurone vincente è il #" + best );
     }
 
     /**

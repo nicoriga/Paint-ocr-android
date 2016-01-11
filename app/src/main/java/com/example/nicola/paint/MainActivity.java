@@ -219,46 +219,6 @@ public class MainActivity extends Activity{
 
     public void onClickAdd(View view){
         showInputDialog().show();
-        /*
-        try {
-            // TODO da sistemare l'aggiunto di un nuovo carattere...
-
-            String character;
-
-            // richiede la lettera attraverso un dialog
-            showInputDialog().show();
-            character = newCharacter;
-
-            dbAdapter.open();
-
-            // effettuo il downsampling per realizzare la stringa di 1 e 0 da inserire nel database
-            Entry entry = new Entry(drawView.canvasBitmap);
-            Sample sample = new Sample(DOWNSAMPLE_WIDTH, DOWNSAMPLE_HEIGHT);
-            entry.setSample(sample);
-            entry.downSample();
-            String data = "";
-
-            SampleData ds = sample.getData();
-            ds.setLetter(character.charAt(0));
-
-            for ( int y=0;y<ds.getHeight();y++ ) {
-                for ( int x=0;x<ds.getWidth();x++ ) {
-                    data += ( ds.getData(x,y)?"1":"0" );
-                }
-            }
-
-            sd_array.add(ds);
-            ArrayAdapter<SampleData> adapter = new ArrayAdapter<>(this,android.R.layout.simple_list_item_1, android.R.id.text1, sd_array);
-            // Assign adapter to ListView
-            lettersList.setAdapter(adapter);
-            dbAdapter.insertRecord(character, data);
-            dbAdapter.close();
-            Toast.makeText(getApplicationContext(),"Aggiunta lettera.", Toast.LENGTH_SHORT).show();
-
-        } catch ( Exception e ) {
-            Toast.makeText(getApplicationContext(),"Errore Salvataggio:" + e.toString(), Toast.LENGTH_SHORT).show();
-
-        }*/
     }
 
     public void onClickPreview(View view) {
@@ -349,7 +309,6 @@ public class MainActivity extends Activity{
                         //newCharacter = editText.getText().toString();
 
                         try {
-                            // TODO da sistemare l'aggiunto di un nuovo carattere...
 
                             String character;
 

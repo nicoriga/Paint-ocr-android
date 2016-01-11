@@ -11,6 +11,8 @@ public class SampleData implements Comparable,Cloneable {
 	 */
 	protected boolean grid[][];
 
+	protected long id;
+
 	/**
 	 * The letter.
 	 */
@@ -27,6 +29,21 @@ public class SampleData implements Comparable,Cloneable {
 	{
 		grid = new boolean[width][height];
 		this.letter = letter;
+	}
+
+	/**
+	 * The constructor
+	 *
+	 * @param letter What letter this is
+	 * @param width The width
+	 * @param height The height
+	 * @param id The id
+	 */
+	public SampleData(char letter, int width, int height, long id)
+	{
+		grid = new boolean[width][height];
+		this.letter = letter;
+		this.id = id;
 	}
 
 	/**
@@ -117,6 +134,22 @@ public class SampleData implements Comparable,Cloneable {
 			return 1;
 		else
 			return -1;
+	}
+
+	/**
+	 * Set the id
+	 * @param id the id
+	 */
+	public void setId(long id){
+		this.id = id;
+	}
+
+	/**
+	 * Get the id
+	 * @return id
+	 */
+	public long getId(){
+		return id;
 	}
 
 	/**

@@ -96,7 +96,7 @@ public class MainActivity extends Activity{
             @Override
             public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
                                            int pos, long id) {
-
+                final int position = pos;
                 //Toast.makeText(getApplicationContext(),  "pos: " + pos, Toast.LENGTH_SHORT).show();
                 new AlertDialog.Builder(MainActivity.this)
                         .setTitle("Eliminazione")
@@ -104,7 +104,12 @@ public class MainActivity extends Activity{
                         .setIcon(null)
                         .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
-                                // TODO eliminare qui il campione
+                                dbAdapter.open();
+                                dbAdapter.deleteRecord(sd_array.get(position).getId());
+                                sd_array.remove(position);
+                                ArrayAdapter<SampleData> adapter = new ArrayAdapter<SampleData>(context,android.R.layout.simple_list_item_1, android.R.id.text1, sd_array);
+                                lettersList.setAdapter(adapter);
+                                //onClickLoad(null);
                             }
                         })
                         .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
@@ -145,7 +150,7 @@ public class MainActivity extends Activity{
             Cursor cursor = dbAdapter.getAllRecord();
             cursor.moveToFirst();
             while ( !cursor.isAfterLast() ) {
-                SampleData ds = new SampleData(cursor.getString(cursor.getColumnIndex(DBOpenHelper.CHARACTER)).charAt(0),DOWNSAMPLE_WIDTH,DOWNSAMPLE_HEIGHT);
+                SampleData ds = new SampleData(cursor.getString(cursor.getColumnIndex(DBOpenHelper.CHARACTER)).charAt(0),DOWNSAMPLE_WIDTH,DOWNSAMPLE_HEIGHT, cursor.getLong(0));
                 line = cursor.getString( cursor.getColumnIndex(DBOpenHelper.DATA));
                 sd_array.add(ds);
                 int idx=0;
@@ -353,11 +358,13 @@ public class MainActivity extends Activity{
                                 }
                             }
 
+                            long identifier = dbAdapter.insertRecord(character, data);
+                            ds.setId(identifier);
                             sd_array.add(ds);
                             ArrayAdapter<SampleData> adapter = new ArrayAdapter<SampleData>(context,android.R.layout.simple_list_item_1, android.R.id.text1, sd_array);
                             // Assign adapter to ListView
                             lettersList.setAdapter(adapter);
-                            dbAdapter.insertRecord(character, data);
+
                             dbAdapter.close();
                             Toast.makeText(getApplicationContext(),"Aggiunta lettera.", Toast.LENGTH_SHORT).show();
 

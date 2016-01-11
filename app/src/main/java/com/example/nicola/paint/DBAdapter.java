@@ -53,7 +53,7 @@ public class DBAdapter {
 
 
     // elimina record
-    public boolean deleteRecord(int sessionID)
+    public boolean deleteRecord(long sessionID)
     {
         return database.delete(DBOpenHelper.TABLE, DBOpenHelper.ID + "=" + sessionID, null) > 0;
     }

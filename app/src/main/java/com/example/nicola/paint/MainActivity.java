@@ -218,7 +218,8 @@ public class MainActivity extends Activity{
     }
 
     public void onClickAdd(View view){
-
+        showInputDialog().show();
+        /*
         try {
             // TODO da sistemare l'aggiunto di un nuovo carattere...
 
@@ -257,7 +258,7 @@ public class MainActivity extends Activity{
         } catch ( Exception e ) {
             Toast.makeText(getApplicationContext(),"Errore Salvataggio:" + e.toString(), Toast.LENGTH_SHORT).show();
 
-        }
+        }*/
     }
 
     public void onClickPreview(View view) {
@@ -345,7 +346,46 @@ public class MainActivity extends Activity{
         alertDialogBuilder.setCancelable(false)
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        newCharacter = editText.getText().toString();
+                        //newCharacter = editText.getText().toString();
+
+                        try {
+                            // TODO da sistemare l'aggiunto di un nuovo carattere...
+
+                            String character;
+
+                            //character = newCharacter;
+                            character = editText.getText().toString();
+
+                            dbAdapter.open();
+
+                            // effettuo il downsampling per realizzare la stringa di 1 e 0 da inserire nel database
+                            Entry entry = new Entry(drawView.canvasBitmap);
+                            Sample sample = new Sample(DOWNSAMPLE_WIDTH, DOWNSAMPLE_HEIGHT);
+                            entry.setSample(sample);
+                            entry.downSample();
+                            String data = "";
+
+                            SampleData ds = sample.getData();
+                            ds.setLetter(character.charAt(0));
+
+                            for ( int y=0;y<ds.getHeight();y++ ) {
+                                for ( int x=0;x<ds.getWidth();x++ ) {
+                                    data += ( ds.getData(x,y)?"1":"0" );
+                                }
+                            }
+
+                            sd_array.add(ds);
+                            ArrayAdapter<SampleData> adapter = new ArrayAdapter<SampleData>(context,android.R.layout.simple_list_item_1, android.R.id.text1, sd_array);
+                            // Assign adapter to ListView
+                            lettersList.setAdapter(adapter);
+                            dbAdapter.insertRecord(character, data);
+                            dbAdapter.close();
+                            Toast.makeText(getApplicationContext(),"Aggiunta lettera.", Toast.LENGTH_SHORT).show();
+
+                        } catch ( Exception e ) {
+                            Toast.makeText(getApplicationContext(),"Errore Salvataggio:" + e.toString(), Toast.LENGTH_SHORT).show();
+
+                        }
                     }
                 })
                 .setNegativeButton("Cancel",

@@ -1,18 +1,17 @@
 package com.example.nicola.paint;
 
 import android.app.Activity;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Menu;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -22,13 +21,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.UUID;
 
 public class MainActivity extends Activity{
 
@@ -97,6 +90,31 @@ public class MainActivity extends Activity{
                 s.setData((SampleData) lettersList.getItemAtPosition(position));
                 ((ImageView) findViewById(R.id.sample_image)).setImageBitmap(s.paint(PIXEL_SIZE));
                 ((TextView) findViewById(R.id.recognized_result)).setText("");
+            }
+        });
+        lettersList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
+                                           int pos, long id) {
+
+                //Toast.makeText(getApplicationContext(),  "pos: " + pos, Toast.LENGTH_SHORT).show();
+                new AlertDialog.Builder(MainActivity.this)
+                        .setTitle("Eliminazione")
+                        .setMessage("Eliminare il Sample?")
+                        .setIcon(null)
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                // TODO eliminare qui il campione
+                            }
+                        })
+                        .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                return; // Do nothing.
+                            }
+                        })
+                        .show();
+
+                return true;
             }
         });
 
